@@ -2,7 +2,7 @@ import type { Token } from '../scanner/token.type';
 import type { InfixParselet, InfixParseletTrieNode, ParseletInfo, PrefixParselet, PrefixParseletTrieNode, TokenPattern } from './parser.type';
 import type { ParserContext } from './parser_context.type';
 import { peek_token } from './parser_context';
-import { read_pattern } from './token_pattern';
+import { read_token_pattern } from './token_pattern';
 import { unexpected_token } from '../scanner/error';
 
 const INFIX_PARSELET_ROOT: Map<TokenPattern, InfixParseletTrieNode> = new Map;
@@ -21,7 +21,7 @@ export function add_prefix_parselet (pattern: TokenPattern, precedence: number, 
 }
 
 export function add_infix_parselet (pattern: TokenPattern, precedence: number, parselet: InfixParselet): void {
-	const { type, value } = read_pattern(pattern);
+	const { type, value } = read_token_pattern(pattern);
 	const patterns = type !== 'symbol' ? [ pattern ] : (value?.split('').map(ch => `symbol:${ch}` as TokenPattern) ?? [ 'symbol' ]); 
 	
 	const last = patterns.pop();

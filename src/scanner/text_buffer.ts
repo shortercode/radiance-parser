@@ -1,6 +1,6 @@
+import type { ScanContext } from './scan_context.type';
+import type { TextBuffer } from './text_buffer.type';
 import { consume_char } from './scan_context';
-import { ScanContext } from './scan_context.type';
-import { TextBuffer } from './text_buffer.type';
 
 export function buffer_start(buffer: TextBuffer, ctx: ScanContext): void {
 	buffer.start = ctx.index;
