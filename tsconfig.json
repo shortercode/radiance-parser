@@ -12,7 +12,8 @@
 		"noFallthroughCasesInSwitch": true,
 		"forceConsistentCasingInFileNames": true,
 		"esModuleInterop": true,
-		"moduleResolution": "node"
+		"moduleResolution": "node",
+		"importsNotUsedAsValues": "error"
 	},
 	"include": [
 		"./src"

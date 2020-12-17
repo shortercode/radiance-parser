@@ -1,4 +1,4 @@
-import { Token } from '../scanner/token.type';
+import type { Token } from '../scanner/token.type';
 
 export interface ParserContext {
 	source: Token[];
