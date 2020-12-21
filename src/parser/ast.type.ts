@@ -1,20 +1,9 @@
 import type { Position } from '../scanner/position.type';
-
+import type { Statement } from './statements.type';
 export interface Expression {
 	start: Position;
 	end: Position;
 	type: `${string}_expression`;
-}
-
-export interface Statement {
-	start: Position;
-	end: Position;
-	type: `${string}_statement`;
-}
-
-export interface ExpressionStatement extends Statement {
-	type: 'expression_statement';
-	expression: Expression;
 }
 
 export interface Module {
@@ -22,41 +11,6 @@ export interface Module {
 	end: Position;
 	type: 'module';
 	body: Statement[];
-}
-
-export interface FunctionStatement extends Statement {
-	type: 'function_statement';
-	type_pattern: TypePattern;
-	body: Statement[];
-	generics: string[];
-}
-
-export interface StructStatement extends Statement {
-	type: 'struct_statement';
-}
-
-export interface EnumStatement extends Statement {
-	type: 'enum_statement';
-}
-
-export interface ExportStatement extends Statement {
-	type: 'export_statement';
-}
-
-export interface ImportStatement extends Statement {
-	type: 'import_statement';
-}
-
-export interface TypeStatement extends Statement {
-	type: 'type_statement';
-}
-
-export interface LetStatement extends Statement {
-	type: 'let_statement';
-}
-
-export interface ReturnStatement extends Statement {
-	type: 'return_statement';
 }
 
 export interface ConstructorExpression extends Expression {

@@ -1,9 +1,10 @@
 import type { Position } from '../scanner/position.type';
-import type { ExpressionStatement, Statement } from './ast.type';
 import type { ParserContext } from './parser_context.type';
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { parse_expression } from './expression';
 import { consume_token, match_token, peek_token } from './parser_context';
+import type { ExpressionStatement, Statement } from './statements.type';
+import { parse_let_declaration } from './statements/let';
 
 export function parse_statement(ctx: ParserContext): Statement {
 	const token = peek_token(ctx);
@@ -18,7 +19,7 @@ export function parse_statement(ctx: ParserContext): Statement {
 		case 'fn': return parse_function_statement(ctx);
 		case 'struct': return parse_struct_statement(ctx);
 		case 'enum': return parse_enum_statement(ctx);
-		case 'let': return parse_let_statement(ctx);
+		case 'let': return parse_let_declaration(ctx);
 		case 'return': return parse_return_statement(ctx);
 		case 'type': return parse_type_statement(ctx);
 		}
