@@ -1,6 +1,6 @@
 import { unexpected_end_of_input } from '../scanner/error';
-import type { ArrayTypePattern, ClassTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './ast.type';
 import { consume_token, ensure_token, match_token, tokens_remaining } from './parser_context';
+import type { ArrayTypePattern, ClassTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
 import type { ParserContext } from './parser_context.type';
 
 export function parse_type_pattern (ctx: ParserContext): TypePattern {
