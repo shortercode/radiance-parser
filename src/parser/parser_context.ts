@@ -27,9 +27,12 @@ export function create_parser_context (source: Token[]): ParserContext {
 	};
 }
 
-export function match_token(ctx: ParserContext, type: TokenTypes, value: string, offset = 0): boolean {
+export function match_token(ctx: ParserContext, type: TokenTypes, value?: string, offset = 0): boolean {
 	const token = peek_token(ctx, offset);
-	return !!token && token.type === type && token.value === value;
+	if (!token || token.type !== type) {
+		return false;
+	}
+	return !value || token.value === value;
 }
 
 export function ensure_token(ctx: ParserContext, type: TokenTypes, value?: string): Token {

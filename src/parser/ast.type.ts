@@ -1,8 +1,6 @@
 import type { Position } from '../scanner/position.type';
 
 export interface TypePattern {
-	start: Position;
-	end: Position;
 	type: `${string}_type`;
 }
 
@@ -13,13 +11,25 @@ export interface ClassTypePattern extends TypePattern {
 
 export interface ArrayTypePattern extends TypePattern {
 	type: 'array_type';
-	name: string;
+	subtype: TypePattern;
 	count: number;
 }
 
 export interface MemberTypePattern extends TypePattern {
 	type: 'member_type';
 	object: TypePattern;
+	member: string; 
+}
+
+export interface TupleTypePattern extends TypePattern {
+	type: 'tuple_type';
+	subtypes: TypePattern[];
+}
+
+export interface GenericTypePattern extends TypePattern {
+	type: 'generic_type';
+	object: TypePattern;
+	subtypes: TypePattern[];
 }
 
 export interface Expression {
@@ -39,8 +49,10 @@ export interface ExpressionStatement extends Statement {
 	expression: Expression;
 }
 
-export interface ModuleStatement extends Statement {
-	type: 'module_statement';
+export interface Module {
+	start: Position;
+	end: Position;
+	type: 'module';
 	body: Statement[];
 }
 
