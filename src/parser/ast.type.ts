@@ -99,6 +99,7 @@ export interface IfExpression extends Expression {
 
 export interface BlockExpression extends Expression {
 	type: 'block_expression'
+	statements: Statement[];
 }
 
 export interface ArrayLiteralExpression extends Expression {

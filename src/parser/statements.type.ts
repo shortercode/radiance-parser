@@ -1,6 +1,6 @@
 import type { Position } from '../scanner/position.type';
-import type { Expression } from './ast.type';
-import type { TypePattern } from './type_pattern.type';
+import type { BlockExpression, Expression } from './ast.type';
+import type { FunctionTypePattern, TypePattern } from './type_pattern.type';
 
 export interface BaseStatement {
 	start: Position;
@@ -15,14 +15,16 @@ export interface ExpressionStatement extends BaseStatement {
 
 export interface ReturnStatement extends BaseStatement {
 	type: 'return_statement';
-	expression: Expression;
+	expression: Expression | null;
 }
 
 export interface FunctionDeclaration extends BaseStatement {
 	type: 'function_declaration';
-	type_pattern: TypePattern;
-	body: BaseStatement[];
+	name: string;
+	type_pattern: FunctionTypePattern;
 	generics: string[];
+	block: BlockExpression;
+	exported: boolean;
 }
 
 export interface StructDeclaration extends BaseStatement {
@@ -37,7 +39,7 @@ export interface EnumDeclaration extends BaseStatement {
 
 export interface ExportDeclaration extends BaseStatement {
 	type: 'export_declaration';
-	// TODO
+	name: string;
 }
 
 export interface ImportDeclaration extends BaseStatement {

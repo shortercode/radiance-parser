@@ -29,3 +29,15 @@ export interface GenericTypePattern extends TypePattern {
 	object: TypePattern;
 	subtypes: TypePattern[];
 }
+
+export interface FunctionParameter {
+	name: string;
+	type_pattern: TypePattern;
+}
+
+export interface FunctionTypePattern extends TypePattern {
+	type: 'function_type';
+	name: string;
+	parameters: FunctionParameter[];
+	result: TypePattern | null;
+}

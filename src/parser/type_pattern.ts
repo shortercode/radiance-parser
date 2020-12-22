@@ -1,6 +1,6 @@
 import { unexpected_end_of_input } from '../scanner/error';
 import { consume_token, ensure_token, match_token, tokens_remaining } from './parser_context';
-import type { ArrayTypePattern, ClassTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
+import type { ArrayTypePattern, ClassTypePattern, FunctionParameter, FunctionTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
 import type { ParserContext } from './parser_context.type';
 
 export function parse_type_pattern (ctx: ParserContext): TypePattern {
@@ -10,6 +10,10 @@ export function parse_type_pattern (ctx: ParserContext): TypePattern {
 	let root_type: TypePattern;
 	if (match_token(ctx, 'symbol', '(')) {
 		root_type = parse_tuple_type_pattern(ctx);
+		if (match_token(ctx, 'symbol', '-') && match_token(ctx, 'symbol', '>', 1)) {
+			// root_type will always be a TupleTypePattern here
+			root_type = parse_function_type_pattern(ctx, root_type as TupleTypePattern);
+		}
 	}
 	else {
 		root_type = parse_class_type_pattern(ctx);
@@ -57,6 +61,23 @@ export function parse_tuple_type_pattern (ctx: ParserContext): TupleTypePattern 
 	return {
 		type: 'tuple_type',
 		subtypes,
+	};
+}
+
+export function parse_function_type_pattern (ctx: ParserContext, left: TupleTypePattern): FunctionTypePattern {
+	ensure_token(ctx, 'symbol', '-');
+	ensure_token(ctx, 'symbol', '>');
+	const result = parse_type_pattern(ctx);
+	const parameters: FunctionParameter[] = left.subtypes.map((type_pattern, index) => ({
+		name: index.toString(),
+		type_pattern
+	}));
+
+	return {
+		type: 'function_type',
+		name: '(unknown)',
+		parameters,
+		result
 	};
 }
 
