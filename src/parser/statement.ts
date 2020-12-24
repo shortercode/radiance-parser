@@ -9,6 +9,7 @@ import { parse_type_declaration } from './statements/type_declaration';
 import { parse_return_statement } from './statements/return_statement';
 import { parse_function_declaration } from './statements/function_declaration';
 import { parse_export_declaration } from './statements/export_declaration';
+import { parse_import_declaration } from './statements/import_declaration';
 
 export function parse_statement(ctx: ParserContext): Statement {
 	const token = peek_token(ctx);
@@ -19,7 +20,7 @@ export function parse_statement(ctx: ParserContext): Statement {
 	if (type === 'identifier') {
 		switch (value) {
 		case 'export': return parse_export_declaration(ctx);
-		case 'import': return parse_import_statement(ctx);
+		case 'import': return parse_import_declaration(ctx);
 		case 'fn': return parse_function_declaration(ctx);
 		case 'struct': return parse_struct_statement(ctx);
 		case 'enum': return parse_enum_statement(ctx);

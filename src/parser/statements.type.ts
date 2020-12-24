@@ -42,9 +42,11 @@ export interface ExportDeclaration extends BaseStatement {
 	name: string;
 }
 
-export interface ImportDeclaration extends BaseStatement {
-	type: 'import_declaration';
-	// TODO
+export interface ImportFunctionDeclaration extends BaseStatement {
+	type: 'import_function_declaration';
+	name: string;
+	generics: string[];
+	type_pattern: FunctionTypePattern;
 }
 
 export interface TypeDeclaration extends BaseStatement {
@@ -67,7 +69,7 @@ export type Statement = BaseStatement
 	| StructDeclaration
 	| EnumDeclaration
 	| ExportDeclaration
-	| ImportDeclaration
+	| ImportFunctionDeclaration
 	| TypeDeclaration
 	| LetDeclaration;
 	
