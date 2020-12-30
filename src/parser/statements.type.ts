@@ -40,9 +40,16 @@ export interface StructDeclaration extends BaseStatement {
 	fields: ValueDescription[];
 }
 
+export interface EnumVariantDescription {
+	name: string;
+	fields: ValueDescription[];
+}
+
 export interface EnumDeclaration extends BaseStatement {
 	type: 'enum_declaration';
-	// TODO
+	name: string;
+	generics: string[];
+	variants: EnumVariantDescription[];
 }
 
 export interface ExportDeclaration extends BaseStatement {

@@ -1,17 +1,19 @@
 import type { Position } from '../scanner/position.type';
 import type { ParserContext } from './parser_context.type';
-import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
-import { parse_expression } from './expression';
-import { consume_token, match_token, peek_token } from './parser_context';
 import type { ExpressionStatement, Statement } from './statements.type';
+
+import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
+import { consume_token, match_token, peek_token, previous_token } from './parser_context';
+
+import { parse_expression } from './expression';
 import { parse_let_declaration } from './statements/let_declaration';
 import { parse_type_declaration } from './statements/type_declaration';
 import { parse_return_statement } from './statements/return_statement';
 import { parse_function_declaration } from './statements/function_declaration';
 import { parse_export_declaration } from './statements/export_declaration';
 import { parse_import_declaration } from './statements/import_declaration';
-import type { Token } from '../scanner/token.type';
 import { parse_struct_declaration } from './statements/struct_declaration';
+import { parse_enum_declaration } from './statements/enum_declaration';
 
 export function parse_statement(ctx: ParserContext): Statement {
 	const token = peek_token(ctx);
@@ -25,7 +27,7 @@ export function parse_statement(ctx: ParserContext): Statement {
 		case 'import': return parse_import_declaration(ctx);
 		case 'fn': return parse_function_declaration(ctx);
 		case 'struct': return parse_struct_declaration(ctx);
-		case 'enum': return parse_enum_statement(ctx);
+		case 'enum': return parse_enum_declaration(ctx);
 		case 'let': return parse_let_declaration(ctx);
 		case 'return': return parse_return_statement(ctx);
 		case 'type': return parse_type_declaration(ctx);
@@ -67,12 +69,4 @@ export function should_end_statement(ctx: ParserContext): boolean {
 	const current = peek_token(ctx);
 
 	return !current || current.start.row > previous.end.row;
-}
-
-export function previous_token(ctx: ParserContext): Token {
-	const last = peek_token(ctx, -1);
-	if (!last) {
-		throw new Error('Unreachable: "previous_token" should not be called if we haven\'t processed any tokens.');
-	}
-	return last;
 }

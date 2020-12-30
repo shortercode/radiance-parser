@@ -47,3 +47,11 @@ export function ensure_token(ctx: ParserContext, type: TokenTypes, value?: strin
 	}
 	unexpected_token(token.value);
 }
+
+export function previous_token(ctx: ParserContext): Token {
+	const last = peek_token(ctx, -1);
+	if (!last) {
+		throw new Error('Unreachable: "previous_token" should not be called if we haven\'t processed any tokens.');
+	}
+	return last;
+}
