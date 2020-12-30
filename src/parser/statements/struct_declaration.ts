@@ -1,7 +1,6 @@
 import { unexpected_end_of_input } from '../../scanner/error';
-import { consume_token, ensure_token, match_token, tokens_remaining } from '../parser_context';
+import { consume_token, ensure_token, match_token, previous_token, tokens_remaining } from '../parser_context';
 import type { ParserContext } from '../parser_context.type';
-import { previous_token } from '../statement';
 import type { StructDeclaration, ValueDescription } from '../statements.type';
 import { parse_type_parameters } from './function_declaration';
 import { parse_value_description } from './let_declaration';
