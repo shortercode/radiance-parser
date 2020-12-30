@@ -8,6 +8,12 @@ export interface BaseStatement {
 	type: `${string}_statement` | `${string}_declaration`;
 }
 
+export interface ValueDescription {
+	type_pattern: TypePattern | null;
+	name: string;
+	initial: Expression | null;
+}
+
 export interface ExpressionStatement extends BaseStatement {
 	type: 'expression_statement';
 	expression: Expression;
@@ -29,7 +35,9 @@ export interface FunctionDeclaration extends BaseStatement {
 
 export interface StructDeclaration extends BaseStatement {
 	type: 'struct_declaration';
-	// TODO
+	name: string;
+	generics: string[];
+	fields: ValueDescription[];
 }
 
 export interface EnumDeclaration extends BaseStatement {
@@ -57,9 +65,7 @@ export interface TypeDeclaration extends BaseStatement {
 
 export interface LetDeclaration extends BaseStatement {
 	type: 'let_declaration';
-	type_pattern: TypePattern | null;
-	name: string;
-	initial: Expression | null;
+	description: ValueDescription;
 }
 
 export type Statement = BaseStatement

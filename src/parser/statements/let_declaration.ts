@@ -1,4 +1,4 @@
-import type { LetDeclaration } from '../statements.type';
+import type { LetDeclaration, ValueDescription } from '../statements.type';
 import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token } from '../parser_context';
 import type { ParserContext } from '../parser_context.type';
@@ -6,7 +6,19 @@ import { end_statement } from '../statement';
 import { parse_type_pattern } from '../type_pattern';
 
 export function parse_let_declaration (ctx: ParserContext): LetDeclaration {
-	const start = ensure_token(ctx, 'identifier', 'let').start;
+	const { start } = ensure_token(ctx, 'identifier', 'let');
+	const description = parse_value_description(ctx);
+	const end = end_statement(ctx);
+
+	return {
+		type: 'let_declaration',
+		description,
+		start, 
+		end,
+	};
+}
+
+export function parse_value_description (ctx: ParserContext): ValueDescription {
 	const name = ensure_token(ctx, 'identifier').value;
 	let type_pattern = null;
 	let initial = null;
@@ -21,14 +33,9 @@ export function parse_let_declaration (ctx: ParserContext): LetDeclaration {
 		initial = parse_expression(ctx, 1);
 	}
 
-	const end = end_statement(ctx);
-
 	return {
-		type: 'let_declaration',
-		type_pattern,
 		name,
-		start, 
-		end,
 		initial,
+		type_pattern
 	};
 }

@@ -10,6 +10,8 @@ import { parse_return_statement } from './statements/return_statement';
 import { parse_function_declaration } from './statements/function_declaration';
 import { parse_export_declaration } from './statements/export_declaration';
 import { parse_import_declaration } from './statements/import_declaration';
+import type { Token } from '../scanner/token.type';
+import { parse_struct_declaration } from './statements/struct_declaration';
 
 export function parse_statement(ctx: ParserContext): Statement {
 	const token = peek_token(ctx);
@@ -22,7 +24,7 @@ export function parse_statement(ctx: ParserContext): Statement {
 		case 'export': return parse_export_declaration(ctx);
 		case 'import': return parse_import_declaration(ctx);
 		case 'fn': return parse_function_declaration(ctx);
-		case 'struct': return parse_struct_statement(ctx);
+		case 'struct': return parse_struct_declaration(ctx);
 		case 'enum': return parse_enum_statement(ctx);
 		case 'let': return parse_let_declaration(ctx);
 		case 'return': return parse_return_statement(ctx);
@@ -45,19 +47,14 @@ export function end_statement(ctx: ParserContext): Position {
 		return consume_token(ctx).end;
 	}
 
-	const previous = peek_token(ctx, -1);
+	const previous = previous_token(ctx);
 	const current = peek_token(ctx);
 
-	if (previous) {
-		// either end of file or next token is on a different line
-		if (!current || current.start.row > previous.end.row) {
-			return previous.end;
-		}
-		unexpected_token(current.value);
+	// either end of file or next token is on a different line
+	if (!current || current.start.row > previous.end.row) {
+		return previous.end;
 	}
-	else {
-		throw new Error('Unreachable: end statement should not be called if we haven\'t processed any tokens.');
-	}
+	unexpected_token(current.value);
 }
 
 export function should_end_statement(ctx: ParserContext): boolean {
@@ -66,14 +63,16 @@ export function should_end_statement(ctx: ParserContext): boolean {
 		return true;
 	}
 
-	const previous = peek_token(ctx, -1);
+	const previous = previous_token(ctx);
 	const current = peek_token(ctx);
 
-	if (previous) {
-		// either end of file or next token is on a different line
-		return !current || current.start.row > previous.end.row;
+	return !current || current.start.row > previous.end.row;
+}
+
+export function previous_token(ctx: ParserContext): Token {
+	const last = peek_token(ctx, -1);
+	if (!last) {
+		throw new Error('Unreachable: "previous_token" should not be called if we haven\'t processed any tokens.');
 	}
-	else {
-		throw new Error('Unreachable: end statement should not be called if we haven\'t processed any tokens.');
-	}
+	return last;
 }
