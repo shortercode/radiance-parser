@@ -8,6 +8,17 @@ import { unexpected_token } from '../scanner/error';
 const INFIX_PARSELET_ROOT: Map<TokenPattern, InfixParseletTrieNode> = new Map;
 const PREFIX_PARSELET_ROOT: Map<TokenPattern, PrefixParseletTrieNode> = new Map;
 
+export function as_token_pattern (type: TokenTypes, value: string): TokenPattern {
+	return `${type}:${value}`;
+}
+
+export function split_symbol_token_pattern(value?: string): TokenPattern[] {
+	if (value) {
+		return value.split('').map(ch => as_token_pattern('symbol', ch));
+	}
+	return ['symbol'];
+}
+
 export function add_prefix_parselet (pattern: TokenPattern, precedence: number, parselet: PrefixParselet): void {
 	if (PREFIX_PARSELET_ROOT.has(pattern)) {
 		throw new Error(`A prefix parselet with the pattern ${pattern} has already been registered`);
@@ -22,8 +33,7 @@ export function add_prefix_parselet (pattern: TokenPattern, precedence: number, 
 
 export function add_infix_parselet (pattern: TokenPattern, precedence: number, parselet: InfixParselet): void {
 	const { type, value } = read_token_pattern(pattern);
-	const patterns = type !== 'symbol' ? [ pattern ] : (value?.split('').map(ch => `symbol:${ch}` as TokenPattern) ?? [ 'symbol' ]); 
-	
+	const patterns = type !== 'symbol' ? [ pattern ] : split_symbol_token_pattern(value); 
 	const last = patterns.pop();
 
 	if (!last) {
@@ -59,9 +69,7 @@ export function add_infix_parselet (pattern: TokenPattern, precedence: number, p
 
 export function get_prefix_parselet (token: Token): ParseletInfo<PrefixParselet> | null {
 	const { type, value } = token;
-	// NOTE pattern matches TokenPattern, but is resolved as string, so it must be cast
-	// hopefully in future TS will fix this and we can ditch the cast.
-	const pattern = `${type}:${value}` as TokenPattern;
+	const pattern = as_token_pattern(type, value);
 	
 	const node = PREFIX_PARSELET_ROOT.get(pattern) ?? PREFIX_PARSELET_ROOT.get(type);
 
@@ -70,9 +78,7 @@ export function get_prefix_parselet (token: Token): ParseletInfo<PrefixParselet>
 
 export function get_infix_parselet (token: Token, ctx: ParserContext): ParseletInfo<InfixParselet> | null {
 	const { type, value } = token;
-	// NOTE pattern matches TokenPattern, but is resolved as string, so it must be cast
-	// hopefully in future TS will fix this and we can ditch the cast.
-	const pattern = `${type}:${value}` as TokenPattern;
+	const pattern = as_token_pattern(type, value);
 	const node = INFIX_PARSELET_ROOT.get(pattern) ?? INFIX_PARSELET_ROOT.get(type);
 
 	if (!node) {
@@ -87,7 +93,7 @@ export function get_infix_parselet (token: Token, ctx: ParserContext): ParseletI
 		if (token) {
 			// repeat matching check for second token
 			const { type, value } = token;
-			const pattern = `${type}:${value}` as TokenPattern;
+			const pattern = as_token_pattern(type, value);
 			const subnode = children.get(pattern) ?? children.get(type);
 			if (subnode && subnode.parselet_info) {
 				return subnode.parselet_info;
