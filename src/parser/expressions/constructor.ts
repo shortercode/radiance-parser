@@ -5,7 +5,7 @@ import type { ParserContext } from '../parser_context.type';
 import type { TypePattern } from '../type_pattern.type';
 import type { ConstructorExpression, Expression } from '../expression.type';
 
-export function parse_constructor_expression (ctx: ParserContext, callee: Expression, generics: TypePattern[] = []): ConstructorExpression {
+export function parse_constructor_expression (ctx: ParserContext, callee: Expression, _precedence: number, generics: TypePattern[] = []): ConstructorExpression {
 	const { start } = callee;
 	const { elements, end } = parse_sequence(ctx, ['{', '}'], ctx => {
 		const name = ensure_token(ctx, 'identifier').value;

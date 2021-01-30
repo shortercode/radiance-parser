@@ -7,7 +7,7 @@ import type { ParserContext } from '../parser_context.type';
 import type { TypePattern } from '../type_pattern.type';
 import type { CallExpression, ConstructorExpression, Expression } from '../expression.type';
 
-export function parse_call_expression (ctx: ParserContext, callee: Expression, type_arguments: TypePattern[] = []): CallExpression {
+export function parse_call_expression (ctx: ParserContext, callee: Expression, _precedence: number, type_arguments: TypePattern[] = []): CallExpression {
 	const { start } = callee;
 	const { elements, end } = parse_expression_sequence(ctx, ['(', ')']);
 	return {
@@ -25,8 +25,8 @@ export function parse_generic_call_expression (ctx: ParserContext, left: Express
 	const { elements } = parse_sequence(ctx, ['<', '>'], ctx => parse_type_pattern(ctx));
 
 	if (match_token(ctx, 'symbol', '{')) {
-		return parse_constructor_expression(ctx, left, elements);
+		return parse_constructor_expression(ctx, left, 1, elements);
 	} else {
-		return parse_call_expression(ctx, left, elements);
+		return parse_call_expression(ctx, left, 10, elements);
 	}
 }
