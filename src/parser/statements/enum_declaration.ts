@@ -1,37 +1,22 @@
-import { unexpected_end_of_input } from '../../scanner/error';
-import { consume_token, ensure_token, match_token, previous_token, tokens_remaining } from '../parser_context';
-import type { ParserContext } from '../parser_context.type';
-import type { EnumDeclaration, EnumVariantDescription } from '../statements.type';
+import { ensure_token, match_token } from '../parser_context';
+import { parse_sequence } from '../sequence';
 import { parse_type_parameters } from './function_declaration';
 import { parse_struct_body } from './struct_declaration';
+import type { EnumDeclaration, EnumVariantDescription, ValueDescription } from '../statements.type';
+import type { ParserContext } from '../parser_context.type';
+import { parse_tuple_type_pattern } from '../type_pattern';
 
 export function parse_enum_declaration (ctx: ParserContext): EnumDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'enum');
 	const name = ensure_token(ctx, 'identifier').value;
 	const generics = parse_type_parameters(ctx);
-	const variants = [];
-	ensure_token(ctx, 'symbol', '{');
-
-	while (match_token(ctx, 'symbol', '}') === false) {
-		if (tokens_remaining(ctx) === false) {
-			unexpected_end_of_input();
-		}
-		const variant = parse_enum_variant(ctx);
-		variants.push(variant);
-		if (match_token(ctx, 'symbol', ',') === false) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', '}');
-
-	const { end } = previous_token(ctx);
+	const { elements, end } = parse_sequence(ctx, ['{', '}'], parse_enum_variant);
+	
 	return {
 		type: 'enum_declaration',
 		name,
 		generics,
-		variants,
+		variants: elements,
 		start,
 		end
 	};
@@ -39,7 +24,21 @@ export function parse_enum_declaration (ctx: ParserContext): EnumDeclaration {
 
 export function parse_enum_variant (ctx: ParserContext): EnumVariantDescription {
 	const name = ensure_token(ctx, 'identifier').value;
-	const fields = match_token(ctx, 'symbol', '{') ? parse_struct_body(ctx) : [];
+	let fields: ValueDescription[];
+	if (match_token(ctx, 'symbol', '{')) {
+		fields = parse_struct_body(ctx);
+	}
+	else if (match_token(ctx, 'symbol', '(')) {
+		fields = parse_tuple_type_pattern(ctx).subtypes.map((type_pattern, index) => {
+			return {
+				type_pattern,
+				name: index.toString(),
+			};
+		});
+	}
+	else {
+		fields = [];
+	}
 	return {
 		name,
 		fields

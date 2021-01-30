@@ -1,8 +1,8 @@
-import type { Expression } from './ast.type';
+import type { Expression } from './expression.type';
 import type { ParserContext } from './parser_context.type';
 
-export type TokenTypes = 'string' | 'identifier' | 'number' | 'symbol';
-export type TokenPattern = TokenTypes | `${TokenTypes}:${string}`;
+// export type TokenPattern = TokenTypes | `${TokenTypes}:${string}`;
+export type TokenPattern = string;
 
 export type PrefixParselet = (_ctx: ParserContext, _precedence: number) => Expression;
 export type InfixParselet = (_ctx: ParserContext, _left: Expression, _precedence: number) => Expression;

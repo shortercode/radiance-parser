@@ -1,4 +1,4 @@
-import type { Token } from '../scanner/token.type';
+import type { Token, TokenTypes } from '../scanner/token.type';
 import type { InfixParselet, InfixParseletTrieNode, ParseletInfo, PrefixParselet, PrefixParseletTrieNode, TokenPattern } from './parser.type';
 import type { ParserContext } from './parser_context.type';
 import { peek_token } from './parser_context';

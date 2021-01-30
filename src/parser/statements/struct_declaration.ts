@@ -1,9 +1,9 @@
-import { unexpected_end_of_input } from '../../scanner/error';
-import { consume_token, ensure_token, match_token, previous_token, tokens_remaining } from '../parser_context';
-import type { ParserContext } from '../parser_context.type';
-import type { StructDeclaration, ValueDescription } from '../statements.type';
+import { ensure_token, previous_token } from '../parser_context';
+import { parse_sequence } from '../sequence';
 import { parse_type_parameters } from './function_declaration';
 import { parse_value_description } from './let_declaration';
+import type { ParserContext } from '../parser_context.type';
+import type { StructDeclaration, ValueDescription } from '../statements.type';
 
 export function parse_struct_declaration (ctx: ParserContext): StructDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'struct');
@@ -23,25 +23,5 @@ export function parse_struct_declaration (ctx: ParserContext): StructDeclaration
 }
 
 export function parse_struct_body(ctx: ParserContext): ValueDescription[] {
-	const descriptions: ValueDescription[] = [];
-
-	ensure_token(ctx, 'symbol', '{');
-
-	while (match_token(ctx, 'symbol', '}') === false) {
-		if (tokens_remaining(ctx) === false) {
-			unexpected_end_of_input();
-		}
-
-		const description = parse_value_description(ctx);
-		descriptions.push(description);
-
-		if (match_token(ctx, 'symbol', ',') === false) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', '}');
-
-	return descriptions;
+	return parse_sequence(ctx, ['{', '}'], parse_value_description).elements;
 }

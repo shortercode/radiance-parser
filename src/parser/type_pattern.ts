@@ -1,7 +1,9 @@
 import { unexpected_end_of_input } from '../scanner/error';
-import { consume_token, ensure_token, match_token, tokens_remaining } from './parser_context';
-import type { ArrayTypePattern, ClassTypePattern, FunctionParameter, FunctionTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
+import { ensure_token, match_token, tokens_remaining } from './parser_context';
+import type { ArrayTypePattern, ClassTypePattern, FunctionTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
 import type { ParserContext } from './parser_context.type';
+import { parse_sequence } from './sequence';
+import type { ValueDescription } from './statements.type';
 
 export function parse_type_pattern (ctx: ParserContext): TypePattern {
 	if (tokens_remaining(ctx)) {
@@ -41,26 +43,10 @@ export function parse_class_type_pattern (ctx: ParserContext): ClassTypePattern 
 }
 
 export function parse_tuple_type_pattern (ctx: ParserContext): TupleTypePattern {
-	const subtypes = [];
-
-	ensure_token(ctx, 'symbol', '(');
-
-	while (match_token(ctx, 'symbol', ')') === false) {
-		if (!tokens_remaining(ctx)) {
-			unexpected_end_of_input();
-		}
-		subtypes.push(parse_type_pattern(ctx));
-		if (!match_token(ctx, 'symbol', ',')) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', ')');
-
+	const { elements } = parse_sequence(ctx, ['(', ')'], parse_type_pattern);
 	return {
 		type: 'tuple_type',
-		subtypes,
+		subtypes: elements,
 	};
 }
 
@@ -68,7 +54,7 @@ export function parse_function_type_pattern (ctx: ParserContext, left: TupleType
 	ensure_token(ctx, 'symbol', '-');
 	ensure_token(ctx, 'symbol', '>');
 	const result = parse_type_pattern(ctx);
-	const parameters: FunctionParameter[] = left.subtypes.map((type_pattern, index) => ({
+	const parameters: ValueDescription[] = left.subtypes.map((type_pattern, index) => ({
 		name: index.toString(),
 		type_pattern
 	}));
@@ -111,27 +97,10 @@ export function parse_member_type_pattern (ctx: ParserContext, left: TypePattern
 
 export function parse_generic_type_pattern (ctx: ParserContext, left: TypePattern): GenericTypePattern {
 	ensure_token(ctx, 'symbol', ':');
-	ensure_token(ctx, 'symbol', '<');
-	const subtypes = [];
-
-	ensure_token(ctx, 'symbol', '<');
-
-	while (match_token(ctx, 'symbol', '>') === false) {
-		if (!tokens_remaining(ctx)) {
-			unexpected_end_of_input();
-		}
-		subtypes.push(parse_type_pattern(ctx));
-		if (!match_token(ctx, 'symbol', ',')) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', '>');
-
+	const { elements } = parse_sequence(ctx, ['<', '>'], parse_type_pattern);
 	return {
 		type: 'generic_type',
 		object: left,
-		subtypes,
+		subtypes: elements,
 	};
 }

@@ -7,6 +7,7 @@
   "types": "mjs/index.d.ts",
   "scripts": {
     "test": "jest --verbose --coverage",
+    "typecheck": "tsc --noEmit --watch",
     "build": "rollup -c && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md",
     "lint": "eslint src/*"
   },

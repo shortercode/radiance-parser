@@ -1,17 +1,17 @@
 import type { Position } from '../scanner/position.type';
-import type { BlockExpression, Expression } from './ast.type';
+import type { BlockExpression, Expression } from './expression.type';
 import type { FunctionTypePattern, TypePattern } from './type_pattern.type';
 
 export interface BaseStatement {
 	start: Position;
 	end: Position;
-	type: `${string}_statement` | `${string}_declaration`;
+	type: string;
 }
 
 export interface ValueDescription {
 	type_pattern: TypePattern | null;
 	name: string;
-	initial: Expression | null;
+	initial?: Expression | null;
 }
 
 export interface ExpressionStatement extends BaseStatement {
@@ -75,8 +75,7 @@ export interface LetDeclaration extends BaseStatement {
 	description: ValueDescription;
 }
 
-export type Statement = BaseStatement
-	| ExpressionStatement
+export type Statement = ExpressionStatement
 	| ReturnStatement
 	| FunctionDeclaration
 	| StructDeclaration

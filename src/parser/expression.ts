@@ -1,9 +1,8 @@
 import type { ParserContext } from './parser_context.type';
-import type { Expression } from './ast.type';
-
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { get_infix_parselet, get_prefix_parselet } from './parselets';
 import { peek_token, tokens_remaining } from './parser_context';
+import type { Expression } from './expression.type';
 
 export function parse_expression(ctx: ParserContext, precedence = 0): Expression {
 	let left = parse_prefix_expression(ctx);

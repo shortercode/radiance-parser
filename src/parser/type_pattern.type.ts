@@ -1,5 +1,7 @@
+import type { ValueDescription } from './statements.type';
+
 export interface TypePattern {
-	type: `${string}_type`;
+	type: string;
 }
 
 export interface ClassTypePattern extends TypePattern {
@@ -38,6 +40,6 @@ export interface FunctionParameter {
 export interface FunctionTypePattern extends TypePattern {
 	type: 'function_type';
 	name: string;
-	parameters: FunctionParameter[];
+	parameters: ValueDescription[];
 	result: TypePattern | null;
 }

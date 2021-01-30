@@ -1,10 +1,11 @@
-import { unexpected_end_of_input } from '../../scanner/error';
 import { parse_block_expression } from '../expressions/block_expression';
-import { consume_token, ensure_token, match_token, tokens_remaining } from '../parser_context';
-import type { ParserContext } from '../parser_context.type';
-import type { FunctionDeclaration } from '../statements.type';
+import { consume_token, ensure_token, match_token } from '../parser_context';
+import { parse_sequence } from '../sequence';
 import { parse_type_pattern } from '../type_pattern';
-import type { FunctionParameter, FunctionTypePattern, TypePattern } from '../type_pattern.type';
+import { parse_value_description } from './let_declaration';
+import type { ParserContext } from '../parser_context.type';
+import type { FunctionDeclaration, ValueDescription } from '../statements.type';
+import type { FunctionTypePattern, TypePattern } from '../type_pattern.type';
 
 export function parse_function_declaration (ctx: ParserContext, exported = false): FunctionDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'fn');
@@ -16,7 +17,7 @@ export function parse_function_declaration (ctx: ParserContext, exported = false
 	const result = parse_function_result_type(ctx);
 	// NOTE but this isn't (no block, no effect)
 	const block = parse_block_expression(ctx);
-
+	const { end } = block;
 	const type_pattern: FunctionTypePattern = {
 		name,
 		type: 'function_type',
@@ -27,7 +28,7 @@ export function parse_function_declaration (ctx: ParserContext, exported = false
 	return {
 		type: 'function_declaration',
 		start,
-		end: block.end,
+		end,
 		name,
 		exported,
 		generics,
@@ -48,58 +49,19 @@ export function parse_function_result_type (ctx: ParserContext): TypePattern | n
 // NOTE we could potentially extend the grammer of these parameters to contain
 // things such as default values and contraints in future
 export function parse_type_parameters (ctx: ParserContext): string[] {
-	const parameters: string[] = [];
 	if (match_token(ctx, 'symbol', '<') === false) {
 		// NOTE early exit to allow the parameter block to be optional
-		return parameters;
+		return [];
 	}
 
-	ensure_token(ctx, 'symbol', '<');
-
-	while (match_token(ctx, 'symbol', '>') === false) {
-		if (tokens_remaining(ctx) === false) {
-			unexpected_end_of_input();
-		}
-		const name = ensure_token(ctx, 'identifier').value;
-		parameters.push(name);
-		if (match_token(ctx, 'symbol', ',') === false) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', '>');
-
-	return parameters;
+	return parse_sequence(ctx, ['<', '>'], ctx => ensure_token(ctx, 'identifier').value).elements;
 }
 
-export function parse_parameters (ctx: ParserContext): FunctionParameter[] {
-	const parameters: FunctionParameter[] = [];
+export function parse_parameters (ctx: ParserContext): ValueDescription[] {
 	if (match_token(ctx, 'symbol', '(') === false) {
 		// NOTE early exit to allow the parameter block to be optional
-		return parameters;
+		return [];
 	}
 
-	ensure_token(ctx, 'symbol', '(');
-
-	while (match_token(ctx, 'symbol', ')') === false) {
-		if (tokens_remaining(ctx) === false) {
-			unexpected_end_of_input();
-		}
-		const name = ensure_token(ctx, 'identifier').value;
-		ensure_token(ctx, 'symbol', ':');
-		const type_pattern = parse_type_pattern(ctx);
-		parameters.push({
-			name,
-			type_pattern
-		});
-		if (match_token(ctx, 'symbol', ',') === false) {
-			break;
-		}
-		consume_token(ctx);
-	}
-
-	ensure_token(ctx, 'symbol', ')');
-
-	return parameters;
+	return parse_sequence(ctx, ['(', ')'], parse_value_description).elements;
 }
