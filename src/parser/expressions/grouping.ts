@@ -1,7 +1,7 @@
 import { parse_expression } from '../expression';
+import { parse_sequence } from '../sequence';
 import type { GroupExpression, TupleExpression } from '../expression.type';
 import type { ParserContext } from '../parser_context.type';
-import { parse_sequence } from '../sequence';
 
 export function parse_grouping_expression (ctx: ParserContext): GroupExpression | TupleExpression {	
 	const { start, end, elements } = parse_sequence(ctx, ['(', ')'], parse_expression);

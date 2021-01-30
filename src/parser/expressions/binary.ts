@@ -23,8 +23,6 @@ import type {
 } from '../expression.type';
 import type { ParserContext } from '../parser_context.type';
 
-// 74
-
 export function parse_binary_expression<T extends string> (type: T, ctx: ParserContext, left: Expression, precedence: number): BinaryExpression<T> {
 	const { start } = left;
 	const right = parse_expression(ctx, precedence);

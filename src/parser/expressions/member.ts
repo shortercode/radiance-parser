@@ -1,5 +1,5 @@
-import type { Expression, MemberExpression } from '../expression.type';
 import { consume_token, ensure_token, match_token } from '../parser_context';
+import type { Expression, MemberExpression } from '../expression.type';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_member_expression (ctx: ParserContext, left: Expression): MemberExpression {

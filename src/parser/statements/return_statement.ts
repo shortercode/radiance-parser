@@ -1,7 +1,6 @@
 import { parse_expression } from '../expression';
 import { ensure_token } from '../parser_context';
 import { end_statement, should_end_statement } from '../statement';
-
 import type { ParserContext } from '../parser_context.type';
 import type { ReturnStatement } from '../statements.type';
 

@@ -2,9 +2,9 @@ import { ensure_token, match_token } from '../parser_context';
 import { parse_sequence } from '../sequence';
 import { parse_type_parameters } from './function_declaration';
 import { parse_struct_body } from './struct_declaration';
+import { parse_tuple_type_pattern } from '../type_pattern';
 import type { EnumDeclaration, EnumVariantDescription, ValueDescription } from '../statements.type';
 import type { ParserContext } from '../parser_context.type';
-import { parse_tuple_type_pattern } from '../type_pattern';
 
 export function parse_enum_declaration (ctx: ParserContext): EnumDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'enum');

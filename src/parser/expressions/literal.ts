@@ -1,5 +1,5 @@
-import type { BooleanLiteralExpression, IdentifierLiteralExpression, LiteralExpression, NumberLiteralExpression, StringLiteralExpression } from '../expression.type';
 import { consume_token } from '../parser_context';
+import type { BooleanLiteralExpression, IdentifierLiteralExpression, LiteralExpression, NumberLiteralExpression, StringLiteralExpression } from '../expression.type';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_literal_expression<T extends string> (type: T, ctx: ParserContext): LiteralExpression<T> {

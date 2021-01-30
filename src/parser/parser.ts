@@ -1,8 +1,9 @@
+import { create_parser_context, tokens_remaining } from './parser_context';
+import { parse_statement } from './statement';
+
 import type { Position } from '../scanner/position.type';
 import type { Token } from '../scanner/token.type';
 import type { Module } from './ast.type';
-import { create_parser_context, tokens_remaining } from './parser_context';
-import { parse_statement } from './statement';
 import type { Statement } from './statements.type';
 
 export function parse(tokens: Token[]): Module {
