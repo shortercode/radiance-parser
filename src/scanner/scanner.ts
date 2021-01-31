@@ -81,33 +81,96 @@ export function scan_string(ctx: ScanContext, buffer: TextBuffer): StringToken {
 	const start = current_position(ctx);
 	consume_char(ctx); // consume starting quote mark
 	buffer_start(buffer, ctx);
-	let is_character_escaped = false;
+	let includes_escapes = false;
 	while (characters_remaining(ctx)) {
-		if (is_character_escaped) {
-			const ch = peek_char(ctx);
-			if (ch && ch !== '"' && ch !== '\\') {
-				unsupported_escape_sequence(ch);
-			}
-			buffer_append(buffer, ctx);
-			is_character_escaped = false;
+		const ch = peek_char(ctx);
+		if (ch === '"') {
+			consume_char(ctx);
+			break;
 		}
-		else {
+		buffer_append(buffer, ctx);
+
+		// detect an escape, and consume the next char
+		// this is primarily for \" sequences so that
+		// we don't end the string. actual validation and
+		// transform of the escape needs doing later.
+		//
+		// https://mathiasbynens.be/notes/javascript-escapes
+		if (ch === '\\') {
 			const ch = peek_char(ctx);
-			if (ch === '"') {
-				consume_char(ctx);
-				break;
-			}
-			else if (ch === '\\') {
-				is_character_escaped = true;
-			}
-			else {
+			buffer_append(buffer, ctx);
+			// unicode escape sequences are 6 characters e.g. \u0000
+			if (ch === 'u') {
+				// TODO show better a better error for this
+				buffer_append(buffer, ctx);
+				buffer_append(buffer, ctx);
+				buffer_append(buffer, ctx);
 				buffer_append(buffer, ctx);
 			}
+			// hex escape sequences are 4 characters e.g. \x00
+			else if (ch === 'x') {
+				// TODO show better a better error for this
+				buffer_append(buffer, ctx);
+				buffer_append(buffer, ctx);
+			}
+			includes_escapes = true;
 		}
 	}
 	const end = current_position(ctx);
-	const value = buffer_consume(buffer, ctx);
+	let value = buffer_consume(buffer, ctx);
+	if (includes_escapes) {
+		value = transform_escape_sequences(value);
+	}
 	return { start, end, value, type: 'string' };
+}
+
+const special_chars: Record<string, string> = {
+	'\\': '\\',
+	b: '\b',
+	f: '\f',
+	r: '\r',
+	t: '\t',
+	n: '\n',
+	v: '\v',
+	'0': '\0'
+};
+
+export function transform_escape_sequences (source: string): string {
+	const output = [];
+	const characters = [...source];
+	for (let i = 0; i < characters.length; i += 1) {
+		const ch = characters[i];
+		if (ch !== '\\') {
+			output.push(ch);
+			continue;
+		}
+		// assumes that the input string is well formed by having
+		// AT LEAST 1 more character
+		i += 1;
+		const escaped_ch = characters[i];
+		if (escaped_ch in special_chars) {
+			output.push(special_chars[escaped_ch]);
+		} else if (escaped_ch === 'u') {
+			// requires 4 more chars, or is invalid
+			const code = characters.slice(i + 1, i + 5).join('');
+			if (isNaN(parseInt(code, 16))) {
+				unsupported_escape_sequence('u' + code);
+			}
+			output.push(String.fromCharCode(parseInt(code, 16)));
+			i += 4;
+		} else if (escaped_ch === 'x') {
+			// requires 2 more chars, or is invalid
+			const code = characters.slice(i + 1, i + 3).join('');
+			if (isNaN(parseInt(code, 16))) {
+				unsupported_escape_sequence('x' + code);
+			}
+			output.push(String.fromCharCode(parseInt(code, 16)));
+			i += 2;
+		} else {
+			output.push(escaped_ch);
+		}
+	}
+	return output.join('');
 }
 
 export function scan_line_comment(ctx: ScanContext): void {
