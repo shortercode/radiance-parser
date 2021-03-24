@@ -6,7 +6,7 @@ import type { ArrayTypePattern, ClassTypePattern, FunctionTypePattern, GenericTy
 import type { ParserContext } from './parser_context.type';
 
 export function parse_type_pattern (ctx: ParserContext): TypePattern {
-	if (tokens_remaining(ctx)) {
+	if (!tokens_remaining(ctx)) {
 		unexpected_end_of_input();
 	}
 	let root_type: TypePattern;
