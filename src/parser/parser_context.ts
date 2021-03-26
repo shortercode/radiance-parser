@@ -38,9 +38,6 @@ export function match_token(ctx: ParserContext, type: TokenTypes, value?: string
 
 export function ensure_token(ctx: ParserContext, type: TokenTypes, value?: string): Token {
 	const token = consume_token(ctx);
-	if (!token) {
-		unexpected_end_of_input();
-	}
 	const correct_type = token.type === type;
 	const correct_value = !value || token.value === value;
 	if (correct_type && correct_value) {
