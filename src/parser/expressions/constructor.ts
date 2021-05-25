@@ -1,9 +1,9 @@
 import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token } from '../parser_context';
 import { parse_sequence } from '../sequence';
+
 import type { ParserContext } from '../parser_context.type';
-import type { TypePattern } from '../type_pattern.type';
-import type { ConstructorExpression, Expression } from '../expression.type';
+import type { ConstructorExpression, Expression, TypePattern } from '@radlang/ast';
 
 export function parse_constructor_expression (ctx: ParserContext, callee: Expression, _precedence: number, generics: TypePattern[] = []): ConstructorExpression {
 	const { start } = callee;

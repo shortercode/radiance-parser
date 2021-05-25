@@ -1,8 +1,9 @@
 import { consume_token } from '../parser_context';
-import type { BooleanLiteralExpression, IdentifierLiteralExpression, LiteralExpression, NumberLiteralExpression, StringLiteralExpression } from '../expression.type';
+
+import type { BooleanLiteralExpression, IdentifierLiteralExpression, LiteralExpression, NumberLiteralExpression, StringLiteralExpression } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
-export function parse_literal_expression<T extends string> (type: T, ctx: ParserContext): LiteralExpression<T> {
+export function parse_literal_expression<T extends `${string}_expression`> (type: T, ctx: ParserContext): LiteralExpression<T> {
 	const { start, value, end } = consume_token(ctx);
 
 	return {

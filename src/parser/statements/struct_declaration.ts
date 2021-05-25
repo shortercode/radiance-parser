@@ -2,8 +2,9 @@ import { ensure_token, previous_token } from '../parser_context';
 import { parse_sequence } from '../sequence';
 import { parse_type_parameters } from './function_declaration';
 import { parse_value_description } from './let_declaration';
+
 import type { ParserContext } from '../parser_context.type';
-import type { StructDeclaration, ValueDescription } from '../statements.type';
+import type { StructDeclaration, ValueDescription } from '@radlang/ast';
 
 export function parse_struct_declaration (ctx: ParserContext): StructDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'struct');

@@ -3,7 +3,8 @@ import { parse_sequence } from '../sequence';
 import { parse_type_parameters } from './function_declaration';
 import { parse_struct_body } from './struct_declaration';
 import { parse_tuple_type_pattern } from '../type_pattern';
-import type { EnumDeclaration, EnumVariantDescription, ValueDescription } from '../statements.type';
+
+import type { EnumDeclaration, EnumVariantDescription, ValueDescription } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_enum_declaration (ctx: ParserContext): EnumDeclaration {
@@ -33,6 +34,7 @@ export function parse_enum_variant (ctx: ParserContext): EnumVariantDescription 
 			return {
 				type_pattern,
 				name: index.toString(),
+				initial: null,
 			};
 		});
 	}

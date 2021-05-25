@@ -2,7 +2,8 @@ import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token } from '../parser_context';
 import { end_statement } from '../statement';
 import { parse_type_pattern } from '../type_pattern';
-import type { LetDeclaration, ValueDescription } from '../statements.type';
+
+import type { LetDeclaration, ValueDescription } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_let_declaration (ctx: ParserContext): LetDeclaration {

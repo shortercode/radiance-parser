@@ -1,7 +1,8 @@
 import { ensure_token, match_token } from '../parser_context';
 import { end_statement } from '../statement';
 import { parse_function_declaration } from './function_declaration';
-import type { ExportDeclaration, FunctionDeclaration } from '../statements.type';
+
+import type { ExportDeclaration, FunctionDeclaration } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_export_declaration (ctx: ParserContext): ExportDeclaration | FunctionDeclaration {

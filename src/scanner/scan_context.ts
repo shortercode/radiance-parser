@@ -1,6 +1,6 @@
 import { unexpected_end_of_input } from './error';
 
-import type { Position } from './position.type';
+import type { Position } from '@radlang/ast';
 import type { ScanContext } from './scan_context.type';
 
 export function peek_char(ctx: ScanContext, offset = 0): string | undefined {

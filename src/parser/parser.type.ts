@@ -1,4 +1,4 @@
-import type { Expression } from './expression.type';
+import type { Expression } from '@radlang/ast';
 import type { ParserContext } from './parser_context.type';
 
 // export type TokenPattern = TokenTypes | `${TokenTypes}:${string}`;

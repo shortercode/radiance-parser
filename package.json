@@ -14,6 +14,7 @@
   "author": "Iain Shorter <iainshorter@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@radlang/ast": "^0.1.1",
     "@types/jest": "^26.0.16",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",

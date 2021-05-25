@@ -1,8 +1,6 @@
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { add_infix_parselet, add_prefix_parselet, get_infix_parselet, get_prefix_parselet } from './parselets';
 import { peek_token, tokens_remaining } from './parser_context';
-import type { Expression } from './expression.type';
-import type { ParserContext } from './parser_context.type';
 import { parse_constructor_expression } from './expressions/constructor';
 import {
 	parse_add_expression,
@@ -36,6 +34,9 @@ import { parse_member_expression } from './expressions/member';
 import { parse_grouping_expression } from './expressions/grouping';
 import { parse_type_cast_expression } from './expressions/type_cast';
 import { parse_boolean_expression, parse_identifier_expression, parse_number_expression, parse_string_expression } from './expressions/literal';
+
+import type { Expression } from '@radlang/ast';
+import type { ParserContext } from './parser_context.type';
 
 add_infix_parselet('symbol:{', 1, parse_constructor_expression);
 

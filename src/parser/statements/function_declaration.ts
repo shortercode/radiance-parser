@@ -3,9 +3,9 @@ import { consume_token, ensure_token, match_token } from '../parser_context';
 import { parse_sequence } from '../sequence';
 import { parse_type_pattern } from '../type_pattern';
 import { parse_value_description } from './let_declaration';
+
 import type { ParserContext } from '../parser_context.type';
-import type { FunctionDeclaration, ValueDescription } from '../statements.type';
-import type { FunctionTypePattern, TypePattern } from '../type_pattern.type';
+import type { FunctionTypePattern, TypePattern, FunctionDeclaration, ValueDescription } from '@radlang/ast';
 
 export function parse_function_declaration (ctx: ParserContext, exported = false): FunctionDeclaration {
 	const { start } = ensure_token(ctx, 'identifier', 'fn');

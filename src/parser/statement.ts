@@ -1,6 +1,5 @@
-import type { Position } from '../scanner/position.type';
 import type { ParserContext } from './parser_context.type';
-import type { ExpressionStatement, Statement } from './statements.type';
+import type { ExpressionStatement, Statement, Position } from '@radlang/ast';
 
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { consume_token, match_token, peek_token, previous_token } from './parser_context';

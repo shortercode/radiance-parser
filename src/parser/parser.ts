@@ -1,10 +1,8 @@
 import { create_parser_context, tokens_remaining } from './parser_context';
 import { parse_statement } from './statement';
 
-import type { Position } from '../scanner/position.type';
 import type { Token } from '../scanner/token.type';
-import type { Module } from './ast.type';
-import type { Statement } from './statements.type';
+import type { Module, Statement, Position } from '@radlang/ast';
 
 export function parse(tokens: Token[]): Module {
 	const ctx = create_parser_context(tokens);

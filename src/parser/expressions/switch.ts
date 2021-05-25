@@ -2,8 +2,9 @@ import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token, tokens_remaining } from '../parser_context';
 import { parse_sequence } from '../sequence';
 import { parse_block_expression } from './block_expression';
+
 import type { ParserContext } from '../parser_context.type';
-import type { BlockExpression, SwitchExpression, SwitchExpressionCase } from '../expression.type';
+import type { BlockExpression, SwitchExpression, SwitchExpressionCase } from '@radlang/ast';
 
 export function parse_switch_expression (ctx: ParserContext): SwitchExpression {
 	const { start } = ensure_token(ctx, 'identifier', 'switch');

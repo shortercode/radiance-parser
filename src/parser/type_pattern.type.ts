@@ -1,4 +1,4 @@
-import type { ValueDescription } from './statements.type';
+import type { ValueDescription } from '@radlang/ast';
 
 export interface TypePattern {
 	type: string;

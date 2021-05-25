@@ -1,4 +1,4 @@
-import type { Position } from './position.type';
+import type { Position } from '@radlang/ast';
 
 export type TokenTypes = 'identifier' | 'symbol' | 'number' | 'string';
 

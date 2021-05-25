@@ -33,6 +33,7 @@ describe('type parsing', () => {
 			parameters: [
 				{
 					name: '0',
+					initial: null,
 					type_pattern: {
 						type: 'class_type',
 						name: 'i32'

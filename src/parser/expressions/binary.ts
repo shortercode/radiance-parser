@@ -1,4 +1,5 @@
 import { parse_expression } from '../expression';
+
 import type {
 	AddExpression,
 	AssignmentExpression,
@@ -20,10 +21,10 @@ import type {
 	NotEqualsExpression,
 	RemainderExpression,
 	SubtractExpression
-} from '../expression.type';
+} from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
-export function parse_binary_expression<T extends string> (type: T, ctx: ParserContext, left: Expression, precedence: number): BinaryExpression<T> {
+export function parse_binary_expression<T extends `${string}_expression`> (type: T, ctx: ParserContext, left: Expression, precedence: number): BinaryExpression<T> {
 	const { start } = left;
 	const right = parse_expression(ctx, precedence);
 	const { end } = right;

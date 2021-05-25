@@ -1,7 +1,8 @@
 import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token, previous_token } from '../parser_context';
 import { parse_block_expression } from './block_expression';
-import type { IfExpression, IfLetExpression } from '../expression.type';
+
+import type { IfExpression, IfLetExpression } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_if_expresson (ctx: ParserContext): IfExpression | IfLetExpression {

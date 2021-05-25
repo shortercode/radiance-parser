@@ -1,5 +1,6 @@
 import { parse_expression_sequence } from './expression_sequence';
-import type { ArrayLiteralExpression } from '../expression.type';
+
+import type { ArrayLiteralExpression } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_array_expression (ctx: ParserContext): ArrayLiteralExpression {

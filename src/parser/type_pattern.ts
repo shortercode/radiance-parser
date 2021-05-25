@@ -1,8 +1,8 @@
 import { unexpected_end_of_input } from '../scanner/error';
 import { ensure_token, match_token, tokens_remaining } from './parser_context';
 import { parse_sequence } from './sequence';
-import type { ValueDescription } from './statements.type';
-import type { ArrayTypePattern, ClassTypePattern, FunctionTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from './type_pattern.type';
+
+import type { ValueDescription, ArrayTypePattern, ClassTypePattern, FunctionTypePattern, GenericTypePattern, MemberTypePattern, TupleTypePattern, TypePattern } from '@radlang/ast';
 import type { ParserContext } from './parser_context.type';
 
 export function parse_type_pattern (ctx: ParserContext): TypePattern {
@@ -56,7 +56,8 @@ export function parse_function_type_pattern (ctx: ParserContext, left: TupleType
 	const result = parse_type_pattern(ctx);
 	const parameters: ValueDescription[] = left.subtypes.map((type_pattern, index) => ({
 		name: index.toString(),
-		type_pattern
+		type_pattern,
+		initial: null
 	}));
 
 	return {

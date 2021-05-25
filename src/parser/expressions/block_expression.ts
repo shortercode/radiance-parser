@@ -1,9 +1,9 @@
 import { unexpected_end_of_input } from '../../scanner/error';
 import { ensure_token, match_token, tokens_remaining } from '../parser_context';
 import { parse_statement } from '../statement';
+
 import type { ParserContext } from '../parser_context.type';
-import type { Statement } from '../statements.type';
-import type { BlockExpression } from '../expression.type';
+import type { BlockExpression, Statement } from '@radlang/ast';
 
 export function parse_block_expression (ctx: ParserContext): BlockExpression {
 	const { start } = ensure_token(ctx, 'symbol', '{');

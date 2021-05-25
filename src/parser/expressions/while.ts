@@ -1,7 +1,8 @@
 import { parse_expression } from '../expression';
 import { ensure_token } from '../parser_context';
 import { parse_block_expression } from './block_expression';
-import type { WhileExpression } from '../expression.type';
+
+import type { WhileExpression } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_while_expression (ctx: ParserContext): WhileExpression {

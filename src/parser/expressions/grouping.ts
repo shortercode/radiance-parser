@@ -1,6 +1,7 @@
 import { parse_expression } from '../expression';
 import { parse_sequence } from '../sequence';
-import type { GroupExpression, TupleExpression } from '../expression.type';
+
+import type { GroupExpression, TupleExpression } from '@radlang/ast';
 import type { ParserContext } from '../parser_context.type';
 
 export function parse_grouping_expression (ctx: ParserContext): GroupExpression | TupleExpression {	

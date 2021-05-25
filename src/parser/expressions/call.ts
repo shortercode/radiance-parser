@@ -3,9 +3,9 @@ import { parse_sequence } from '../sequence';
 import { parse_type_pattern } from '../type_pattern';
 import { parse_constructor_expression } from './constructor';
 import { parse_expression_sequence } from './expression_sequence';
+
 import type { ParserContext } from '../parser_context.type';
-import type { TypePattern } from '../type_pattern.type';
-import type { CallExpression, ConstructorExpression, Expression } from '../expression.type';
+import type { CallExpression, ConstructorExpression, Expression, TypePattern } from '@radlang/ast';
 
 export function parse_call_expression (ctx: ParserContext, callee: Expression, _precedence: number, type_arguments: TypePattern[] = []): CallExpression {
 	const { start } = callee;

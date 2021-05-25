@@ -1,4 +1,4 @@
-import type { Position } from '../scanner/position.type';
+import type { Position } from '@radlang/ast';
 
 export interface Sequence<T> {
 	start: Position;
