@@ -1,5 +1,5 @@
 {
-  "name": "radiance-parser",
+  "name": "@radlang/parser",
   "version": "0.1.0",
   "description": "The parser for the Radiance language",
   "main": "cjs/index.js",
