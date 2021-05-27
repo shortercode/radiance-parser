@@ -16,6 +16,14 @@ export function consume_token(ctx: ParserContext): Token {
 	return ch;
 }
 
+// TODO write unit test
+export function skip_tokens(ctx: ParserContext, count: number): void {
+	if (ctx.index + count >= ctx.length) {
+		unexpected_end_of_input();
+	}
+	ctx.index += count;
+}
+
 export function tokens_remaining(ctx: ParserContext): boolean {
 	return ctx.index < ctx.length;
 }

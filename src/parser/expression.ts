@@ -1,6 +1,6 @@
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { add_infix_parselet, add_prefix_parselet, get_infix_parselet, get_prefix_parselet } from './parselets';
-import { peek_token, tokens_remaining } from './parser_context';
+import { peek_token, skip_tokens, tokens_remaining } from './parser_context';
 import { parse_constructor_expression } from './expressions/constructor';
 import {
 	parse_add_expression,
@@ -19,7 +19,8 @@ import {
 	parse_logical_or_expression,
 	parse_multiply_expression,
 	parse_not_equals_expression,
-	parse_remainder_expression
+	parse_remainder_expression,
+	parse_subtract_expression
 } from './expressions/binary';
 import { parse_subscript_expression } from './expressions/subscript';
 import { parse_not_expression } from './expressions/not';
@@ -54,7 +55,7 @@ add_infix_parselet('symbol:<=', 5, parse_less_than_or_equals_expression);
 add_infix_parselet('symbol:>=', 5, parse_greater_than_or_equals_expression);
 
 add_infix_parselet('symbol:+', 6, parse_add_expression);
-add_infix_parselet('symbol:-', 6, parse_subscript_expression);
+add_infix_parselet('symbol:-', 6, parse_subtract_expression);
 add_infix_parselet('symbol:|', 6, parse_bitwise_or_expression);
 
 add_infix_parselet('symbol:*', 7, parse_multiply_expression);
@@ -127,6 +128,10 @@ export function parse_infix_expression(ctx: ParserContext, left: Expression, par
 		return null;
 	}
 	
-	const { precedence, parselet } = parselet_info;
-	return parent_precedence < precedence ? parselet(ctx, left, precedence) : null;
+	const { precedence, parselet, token_length } = parselet_info;
+	if (parent_precedence < precedence) {
+		skip_tokens(ctx, token_length);
+		return parselet(ctx, left, precedence);
+	}
+	return null;
 }

@@ -27,6 +27,7 @@ export function add_prefix_parselet (pattern: TokenPattern, precedence: number, 
 	// see add_infix_parselet for the more complex variant
 	PREFIX_PARSELET_ROOT.set(pattern, {
 		parselet,
+		token_length: 1,
 		precedence
 	});
 }
@@ -34,6 +35,7 @@ export function add_prefix_parselet (pattern: TokenPattern, precedence: number, 
 export function add_infix_parselet (pattern: TokenPattern, precedence: number, parselet: InfixParselet): void {
 	const { type, value } = read_token_pattern(pattern);
 	const patterns = type !== 'symbol' ? [ pattern ] : split_symbol_token_pattern(value); 
+	const token_length = patterns.length;
 	const last = patterns.pop();
 
 	if (!last) {
@@ -60,6 +62,7 @@ export function add_infix_parselet (pattern: TokenPattern, precedence: number, p
 
 	const parselet_info = {
 		precedence,
+		token_length,
 		parselet
 	};
 	current_node.set(last, {
