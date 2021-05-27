@@ -699,7 +699,54 @@ describe('parser', () => {
 				}),
 			]));
 		});
+	});
 
+	describe('grouping expression and tuples', () => {
+		it('parses empty brackets as en empty tuple', () => {
+			expect(quic_parse('()')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'tuple_expression',
+						elements: [],
+					}),
+				}),
+			]));
+		});
+		it('parses single item as grouping ( including trailing comma )', () => {
+			expect(quic_parse('(1,)')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'group_expression',
+						expression: expect.objectContaining({
+							type: 'number_expression',
+							value: '1',
+						}),
+					}),
+				}),
+			]));
+		});
+		it('parses 2 items as tuple', () => {
+			expect(quic_parse('(1, a)')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'tuple_expression',
+						elements: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'number_expression',
+								value: '1',
+							}),
+							expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'a',
+							}),
+						]),
+					}),
+				}),
+			]));
+		});
 	});
 
 });
