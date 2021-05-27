@@ -387,6 +387,319 @@ describe('parser', () => {
 				})
 			]));
 		});
+	});
+
+	describe('block expression', () => {
+		it('parses empty block', () => {
+			expect(quic_parse('{}')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'block_expression',
+						statements: [],
+					}),
+				}),
+			]));
+		});
+		it('parses single statement', () => {
+			expect(quic_parse('{ 12 }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'block_expression',
+						statements: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'expression_statement',
+								expression: expect.objectContaining({
+									type: 'number_expression',
+									value: '12',
+								}),
+							}),
+						]),
+					}),
+				}),
+			]));
+		});
+		it('parses semi-colon delimited statements', () => {
+			expect(quic_parse('{ 12; a }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'block_expression',
+						statements: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'expression_statement',
+								expression: expect.objectContaining({
+									type: 'number_expression',
+									value: '12',
+								}),
+							}),
+							expect.objectContaining({
+								type: 'expression_statement',
+								expression: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'a',
+								}),
+							}),
+						]),
+					}),
+				}),
+			]));
+		});
+		it('parses newline delimited statements', () => {
+			expect(quic_parse('{ 12 \n a }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'block_expression',
+						statements: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'expression_statement',
+								expression: expect.objectContaining({
+									type: 'number_expression',
+									value: '12',
+								}),
+							}),
+							expect.objectContaining({
+								type: 'expression_statement',
+								expression: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'a',
+								}),
+							}),
+						]),
+					}),
+				}),
+			]));
+		});
+		it('throws when the curly brace is missing', () => {
+			expect(() => quic_parse('{')).toThrow('Unexpected end of input.');
+		});
+	});
+	
+	describe('call expression', () => {
+		it('parses with no arguments', () => {
+			expect(quic_parse('a()')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						arguments: [],
+					}),
+				}),
+			]));
+		});
+		it('parses with empty type parameters', () => {
+			expect(quic_parse('a:<>()')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						arguments: [],
+					}),
+				}),
+			]));
+		});
+		it('parses with a type parameter ( and a trailing comma )', () => {
+			expect(quic_parse('a:<A,>()')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [
+							{
+								type: 'class_type',
+								name: 'A'
+							}
+						],
+						arguments: [],
+					}),
+				}),
+			]));
+		});
+		it('parses with 2 type parameters', () => {
+			expect(quic_parse('a:<A,B>()')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [
+							{
+								type: 'class_type',
+								name: 'A'
+							},
+							{
+								type: 'class_type',
+								name: 'B'
+							}
+						],
+						arguments: [],
+					}),
+				}),
+			]));
+		});
+		it('parses with 1 arguments ( and trailing comma )', () => {
+			expect(quic_parse('a(b,)')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						arguments: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'b',
+							})
+						]),
+					}),
+				}),
+			]));
+		});
+		it('parses with 2 arguments', () => {
+			expect(quic_parse('a(b,c)')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'call_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						arguments: expect.arrayContaining([
+							expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'b',
+							}),
+							expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'c',
+							})
+						]),
+					}),
+				}),
+			]));
+		});
+	});
+
+	describe('constructor expression', () => {
+		it('parses a generic constructor', () => {
+			expect(quic_parse('a:<A>{}')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'constructor_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [
+							{
+								type: 'class_type',
+								name: 'A'
+							}
+						],
+						elements: [],
+					}),
+				}),
+			]));
+		});
+		it('parses a single element', () => {
+			expect(quic_parse('a { b: 10 }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'constructor_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						elements: expect.arrayContaining([
+							expect.objectContaining({
+								name: 'b',
+								value: expect.objectContaining({
+									type: 'number_expression',
+									value: '10'
+								})
+							})
+						]),
+					}),
+				}),
+			]));
+		});
+		it('parses a single element without a value', () => {
+			expect(quic_parse('a { b }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'constructor_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						elements: [
+							{
+								name: 'b',
+								value: null
+							}
+						],
+					}),
+				}),
+			]));
+		});
+		it('parses a multiple elements without a value ( and trailing comma )', () => {
+			expect(quic_parse('a { b, c: 42, }')).toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					type: 'expression_statement',
+					expression: expect.objectContaining({
+						type: 'constructor_expression',
+						callee: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'a',
+						}),
+						generics: [],
+						elements: expect.arrayContaining([
+							expect.objectContaining({
+								name: 'b',
+								value: null
+							}),
+							expect.objectContaining({
+								name: 'c',
+								value: expect.objectContaining({
+									type: 'number_expression',
+									value: '42',
+								})
+							}),
+						]),
+					}),
+				}),
+			]));
+		});
 
 	});
+
 });
