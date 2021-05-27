@@ -49,6 +49,12 @@ export function end_statement(ctx: ParserContext): Position {
 	}
 
 	const previous = previous_token(ctx);
+
+	// probably a closing block, if not the error will be caught elsewhere
+	if (match_token(ctx, 'symbol', '}')) {
+		return previous.end;
+	}
+
 	const current = peek_token(ctx);
 
 	// either end of file or next token is on a different line
