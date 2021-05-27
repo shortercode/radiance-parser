@@ -1,6 +1,6 @@
 import { unexpected_end_of_input, unexpected_token } from '../scanner/error';
 import { add_infix_parselet, add_prefix_parselet, get_infix_parselet, get_prefix_parselet } from './parselets';
-import { peek_token, skip_tokens, tokens_remaining } from './parser_context';
+import { peek_token, tokens_remaining } from './parser_context';
 import { parse_constructor_expression } from './expressions/constructor';
 import {
 	parse_add_expression,
@@ -128,9 +128,8 @@ export function parse_infix_expression(ctx: ParserContext, left: Expression, par
 		return null;
 	}
 	
-	const { precedence, parselet, token_length } = parselet_info;
+	const { precedence, parselet } = parselet_info;
 	if (parent_precedence < precedence) {
-		skip_tokens(ctx, token_length);
 		return parselet(ctx, left, precedence);
 	}
 	return null;

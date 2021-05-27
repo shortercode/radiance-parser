@@ -9,7 +9,6 @@ export type InfixParselet = (_ctx: ParserContext, _left: Expression, _precedence
 
 export interface ParseletInfo<T extends (InfixParselet | PrefixParselet)> {
 	parselet: T;
-	token_length: number;
 	precedence: number;
 }
 
