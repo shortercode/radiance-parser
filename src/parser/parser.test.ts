@@ -1027,4 +1027,27 @@ describe('parser', () => {
 			);
 		});
 	});
+
+	describe('subscript expression', () => {
+		it('parses subscript expression', () => {
+			expect(quic_parse('alpha[12]')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'subscript_expression',
+							expression: expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'alpha',
+							}),
+							member: expect.objectContaining({
+								type: 'number_expression',
+								value: '12',
+							})
+						})
+					})
+				])
+			);
+		});
+	});
 });
