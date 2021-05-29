@@ -749,4 +749,263 @@ describe('parser', () => {
 		});
 	});
 
+	describe('if expression', () => {
+		it('parses with a then clause', () => {
+			expect(quic_parse('if a == b {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'if_expression',
+							condition: expect.objectContaining({
+								type: 'equals_expression',
+								left: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'a',
+								}),
+								right: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'b',
+								})
+							}),
+							then_block: expect.objectContaining({
+								type: 'block_expression',
+								statements: []
+							}),
+							else_block: null,
+						})
+					})
+				])
+			);
+		});
+		it('parses an if let', () => {
+			expect(quic_parse('if let a = 12 {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'if_let_expression',
+							condition: expect.objectContaining({
+								type: 'number_expression',
+								value: '12',
+							}),
+							variable_name: 'a',
+							then_block: expect.objectContaining({
+								type: 'block_expression',
+								statements: []
+							}),
+							else_block: null,
+						})
+					}),
+				])
+			);
+		});
+		it('parses an else clause', () => {
+			expect(quic_parse('if a == b {} else {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'if_expression',
+							condition: expect.objectContaining({
+								type: 'equals_expression',
+								left: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'a',
+								}),
+								right: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'b',
+								})
+							}),
+							then_block: expect.objectContaining({
+								type: 'block_expression',
+								statements: []
+							}),
+							else_block: expect.objectContaining({
+								type: 'block_expression',
+								statements: []
+							}),
+						})
+					})
+				]),
+			);
+		});
+		it('parses an else if clause', () => {
+			expect(quic_parse('if a == b {} else if a == c {} else {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'if_expression',
+							condition: expect.objectContaining({
+								type: 'equals_expression',
+								left: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'a',
+								}),
+								right: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'b',
+								})
+							}),
+							then_block: expect.objectContaining({
+								type: 'block_expression',
+								statements: []
+							}),
+							else_block: expect.objectContaining({
+								type: 'if_expression',
+								condition: expect.objectContaining({
+									type: 'equals_expression',
+									left: expect.objectContaining({
+										type: 'identifier_expression',
+										value: 'a',
+									}),
+									right: expect.objectContaining({
+										type: 'identifier_expression',
+										value: 'c',
+									})
+								}),
+								then_block: expect.objectContaining({
+									type: 'block_expression',
+									statements: []
+								}),
+								else_block: expect.objectContaining({
+									type: 'block_expression',
+									statements: []
+								}),
+							})
+						})
+					})
+				])
+			);
+		});
+	});
+
+	describe('literal expression', () => {
+		it('parses true as a boolean literal', () => {
+			expect(quic_parse('true')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'boolean_expression',
+							value: 'true',
+						})
+					})
+				])
+			);
+		});
+		it('parses false as a boolean literal', () => {
+			expect(quic_parse('false')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'boolean_expression',
+							value: 'false',
+						})
+					})
+				])
+			);
+		});
+		it('parses a number as a number literal', () => {
+			expect(quic_parse('12')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'number_expression',
+							value: '12',
+						})
+					})
+				])
+			);
+		});
+		it('parses a string as a string literal', () => {
+			expect(quic_parse('"Hello world!"')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'string_expression',
+							value: 'Hello world!',
+						})
+					})
+				])
+			);
+		});
+		it('parses an identifier as a identifier literal', () => {
+			expect(quic_parse('hello_world')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'identifier_expression',
+							value: 'hello_world',
+						})
+					})
+				])
+			);
+		});
+	});
+	
+	describe('member expression', () => {
+		it('parses a named field', () => {
+			expect(quic_parse('alpha.beta')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'member_expression',
+							expression: expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'alpha'
+							}),
+							member: 'beta'
+						})
+					})
+				])
+			);
+		});
+		it('parses a numerical field', () => {
+			expect(quic_parse('alpha.0')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'member_expression',
+							expression: expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'alpha'
+							}),
+							member: '0'
+						})
+					})
+				])
+			);
+		});
+		it('parses multiple numerical fields', () => {
+			expect(quic_parse('alpha.0.1')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'member_expression',
+							expression: expect.objectContaining({
+								type: 'member_expression',
+								expression: expect.objectContaining({
+									type: 'identifier_expression',
+									value: 'alpha'
+								}),
+								member: '0'
+							}),
+							member: '1'
+						}),
+					})
+				])
+			);
+		});
+
+	});
 });
