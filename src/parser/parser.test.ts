@@ -1050,4 +1050,70 @@ describe('parser', () => {
 			);
 		});
 	});
+
+	describe('type cast expression', () => {
+		it('parses cast expression', () => {
+			expect(quic_parse('alpha as Type')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'cast_expression',
+							expression: expect.objectContaining({
+								type: 'identifier_expression',
+								value: 'alpha',
+							}),
+							type_pattern: expect.objectContaining({
+								type: 'class_type',
+								name: 'Type',
+							})
+						})
+					})
+				])
+			);
+		});
+	});
+
+	describe('unsafe expression', () => {
+		it('parses unsafe expression', () => {
+			expect(quic_parse('unsafe {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'unsafe_expression',
+							block: expect.objectContaining({
+								type: 'block_expression',
+								statements: [],
+							}),
+						})
+					})
+				])
+			);
+		});
+	});
+
+	describe('while expression', () => {
+		it('parses while expression', () => {
+			expect(quic_parse('while true {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'while_expression',
+							condition: expect.objectContaining({
+								type: 'boolean_expression',
+								value: 'true',
+							}),
+							block: expect.objectContaining({
+								type: 'block_expression',
+								statements: [],
+							}),
+						})
+					})
+				])
+			);
+		});
+	});
+
 });
