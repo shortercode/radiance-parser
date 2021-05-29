@@ -1008,4 +1008,23 @@ describe('parser', () => {
 		});
 
 	});
+
+	describe('not expression', () => {
+		it('parses not expression', () => {
+			expect(quic_parse('not true')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'not_expression',
+							expression: expect.objectContaining({
+								type: 'boolean_expression',
+								value: 'true',
+							})
+						})
+					})
+				])
+			);
+		});
+	});
 });
