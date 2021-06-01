@@ -2,6 +2,7 @@ import { parse_expression } from '../expression';
 import { consume_token, ensure_token, match_token, tokens_remaining } from '../parser_context';
 import { parse_sequence } from '../sequence';
 import { parse_block_expression } from './block_expression';
+import { unexpected_end_of_input } from '../../scanner/error';
 
 import type { ParserContext } from '../parser_context.type';
 import type { BlockExpression, SwitchExpression, SwitchExpressionCase } from '@radlang/ast';
@@ -34,13 +35,18 @@ export function parse_switch_expression (ctx: ParserContext): SwitchExpression {
 					conditions.push(condition);
 					break;
 				default:
-					throw new Error('Unexpected expression type for switch case condition');
+					// TODO improve this error message
+					throw new Error('Unexpected expression type for switch case condition.');
 				}
 				if (match_token(ctx, 'symbol', ',')) {
 					consume_token(ctx);
 				} else {
 					break;
 				}
+			}
+
+			if (conditions.length === 0) {
+				unexpected_end_of_input();
 			}
 		
 			if (match_token(ctx, 'identifier', 'as')) {
