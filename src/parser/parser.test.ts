@@ -1051,6 +1051,192 @@ describe('parser', () => {
 		});
 	});
 
+	describe('switch expression', () => {
+		it('parses empty switch expression', () =>{
+			expect(quic_parse('switch 42 {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: [],
+							default_case: null
+						})
+					})
+				])
+			);
+		});
+		it('parses a default case', () =>{
+			expect(quic_parse('switch 42 { default {} }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: [],
+							default_case: expect.objectContaining({
+								type: 'block_expression',
+								statements: [],
+							})
+						})
+					})
+				])
+			);
+		});
+		it('does not accept multiple default cases', () =>{
+			expect(() => quic_parse('switch 42 { default {}, default {} }')).toThrow('Cannot define more than 1 default case');
+		});
+		it('can parse a simple case', () =>{
+			expect(quic_parse('switch 42 { case 42 {} }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: expect.arrayContaining([
+								expect.objectContaining({
+									conditions: expect.arrayContaining([
+										expect.objectContaining({
+											type: 'number_expression',
+											value: '42',
+										})
+									]),
+									style: 'match',
+									block: expect.objectContaining({
+										type: 'block_expression',
+										statements: [],
+									})
+								})
+							]),
+							default_case: null
+						})
+					})
+				])
+			);
+		});
+		it('can parse a multiple cases', () =>{
+			expect(quic_parse('switch 42 { case 42, 64 {} }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: expect.arrayContaining([
+								expect.objectContaining({
+									conditions: expect.arrayContaining([
+										expect.objectContaining({
+											type: 'number_expression',
+											value: '42',
+										}),
+										expect.objectContaining({
+											type: 'number_expression',
+											value: '64',
+										})
+									]),
+									style: 'match',
+									block: expect.objectContaining({
+										type: 'block_expression',
+										statements: [],
+									})
+								})
+							]),
+							default_case: null
+						})
+					})
+				])
+			);
+		});
+		it('throws if no tokens after case', () =>{
+			expect(() => quic_parse('switch 42 { case')).toThrow('Unexpected end of input.');
+		});
+		it('throws if invalid case value', () =>{
+			expect(() => quic_parse('switch 42 { case () }')).toThrow('Unexpected expression type for switch case condition.');
+		});
+		it('can parse a casting case', () =>{
+			expect(quic_parse('switch 42 { case 42 as n {} }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: expect.arrayContaining([
+								expect.objectContaining({
+									conditions: expect.arrayContaining([
+										expect.objectContaining({
+											type: 'number_expression',
+											value: '42',
+										})
+									]),
+									style: 'cast',
+									identifier: 'n',
+									block: expect.objectContaining({
+										type: 'block_expression',
+										statements: [],
+									})
+								})
+							]),
+							default_case: null
+						})
+					})
+				])
+			);
+		});
+		it('can parse a casting case', () =>{
+			expect(quic_parse('switch 42 { case 42 as { n, b } {} }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'expression_statement',
+						expression: expect.objectContaining({
+							type: 'switch_expression',
+							parameter: expect.objectContaining({
+								type: 'number_expression',
+								value: '42',
+							}),
+							cases: expect.arrayContaining([
+								expect.objectContaining({
+									conditions: expect.arrayContaining([
+										expect.objectContaining({
+											type: 'number_expression',
+											value: '42',
+										})
+									]),
+									style: 'destructure',
+									fields: ['n', 'b'],
+									block: expect.objectContaining({
+										type: 'block_expression',
+										statements: [],
+									})
+								})
+							]),
+							default_case: null
+						})
+					})
+				])
+			);
+		});
+
+	});
+
 	describe('type cast expression', () => {
 		it('parses cast expression', () => {
 			expect(quic_parse('alpha as Type')).toEqual(
