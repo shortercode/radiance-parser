@@ -121,6 +121,8 @@ export function parse_prefix_expression(ctx: ParserContext): Expression {
 export function parse_infix_expression(ctx: ParserContext, left: Expression, parent_precedence: number): Expression | null {
 	const token = peek_token(ctx);
 	if (!token) {
+		// unreachable - this function is _only_ called when there are remaining tokens
+		// as such peek_token will always return a value here
 		return null;
 	}
 	const parselet_info = get_infix_parselet(token, ctx);
