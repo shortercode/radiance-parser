@@ -1,5 +1,5 @@
 import { unexpected_end_of_input, unexpected_token } from '../../scanner/error';
-import { ensure_token, match_token, peek_token, previous_token } from '../parser_context';
+import { consume_token, ensure_token, match_token, peek_token, previous_token } from '../parser_context';
 import { parse_function_result_type, parse_parameters, parse_type_parameters } from './function_declaration';
 
 import type { ParserContext } from '../parser_context.type';
@@ -9,6 +9,7 @@ export function parse_import_declaration (ctx: ParserContext): ImportFunctionDec
 	const { start } = ensure_token(ctx, 'identifier', 'import');
 
 	if (match_token(ctx, 'identifier', 'fn')) {
+		consume_token(ctx);
 		const name = ensure_token(ctx, 'identifier').value;
 		// NOTE these 3 are technically all optional!
 		const parameters = parse_parameters(ctx);
