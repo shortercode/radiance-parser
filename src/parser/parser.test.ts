@@ -13,6 +13,7 @@ describe('parser', () => {
 			body: [],
 		}));
 	});
+
 	describe('array', () => {
 		it('parses an empty array', () => {
 			expect(quic_parse('[]')).toEqual(expect.arrayContaining([
@@ -62,6 +63,7 @@ describe('parser', () => {
 			]));
 		});
 	});
+
 	describe('binary', () => {
 		it('add', () => {
 			expect(quic_parse('left + right')).toEqual(expect.arrayContaining([
@@ -1302,4 +1304,313 @@ describe('parser', () => {
 		});
 	});
 
+	describe('enum declaration', () => {
+		it('parses empty enum declaration', () => {
+			expect(quic_parse('enum Alpha {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'enum_declaration',
+						name: 'Alpha',
+						generics: [],
+						variants: [],
+					})
+				]),
+			);
+		});
+
+		it('parses enum declaration with multiple variants', () => {
+			expect(quic_parse('enum Beta { first, second (Value), third { b: Other } }')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'enum_declaration',
+						name: 'Beta',
+						generics: [],
+						variants: [
+							{
+								name: 'first',
+								fields: []
+							},
+							{
+								name: 'second',
+								fields: [
+									{
+										name: '0',
+										initial: null,
+										type_pattern: {
+											type: 'class_type',
+											name: 'Value',
+										}
+									}
+								]
+							},
+							{
+								name: 'third',
+								fields: [
+									{
+										name: 'b',
+										initial: null,
+										type_pattern: {
+											type: 'class_type',
+											name: 'Other',
+										}
+									}
+								]
+							},
+						],
+					})
+				]),
+			);
+		});
+	});
+
+	describe('export declaration', () => {
+		it('parses simple export declaration', () => {
+			expect(quic_parse('export Alpha')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'export_declaration',
+						name: 'Alpha',
+					})
+				]),
+			);
+		});
+		it('parses function export declaration', () => {
+			expect(quic_parse('export fn alpha {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'function_declaration',
+						name: 'alpha',
+						exported: true,
+						generics: [],
+						block: expect.objectContaining({
+							type: 'block_expression',
+							statements: []
+						}),
+						type_pattern: {
+							name: 'alpha',
+							type: 'function_type',
+							parameters: [],
+							result: null,
+						}
+					})
+				]),
+			);
+		});
+	});
+
+	describe('function declaration', () => {
+		it('parses function declaration with no parameters or return type', () => {
+			expect(quic_parse('fn alpha {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'function_declaration',
+						name: 'alpha',
+						exported: false,
+						generics: [],
+						block: expect.objectContaining({
+							type: 'block_expression',
+							statements: []
+						}),
+						type_pattern: {
+							name: 'alpha',
+							type: 'function_type',
+							parameters: [],
+							result: null,
+						}
+					})
+				]),
+			);
+		});
+
+		it('parses function declaration with type parameters', () => {
+			expect(quic_parse('fn alpha<alpha> {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'function_declaration',
+						name: 'alpha',
+						exported: false,
+						generics: ['alpha'],
+						block: expect.objectContaining({
+							type: 'block_expression',
+							statements: []
+						}),
+						type_pattern: {
+							name: 'alpha',
+							type: 'function_type',
+							parameters: [],
+							result: null,
+						}
+					})
+				]),
+			);
+		});
+
+		it('parses function declaration with no parameters and a return type', () => {
+			expect(quic_parse('fn alpha -> u32 {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'function_declaration',
+						name: 'alpha',
+						exported: false,
+						generics: [],
+						block: expect.objectContaining({
+							type: 'block_expression',
+							statements: []
+						}),
+						type_pattern: {
+							name: 'alpha',
+							type: 'function_type',
+							parameters: [],
+							result: {
+								type: 'class_type',
+								name: 'u32',
+							},
+						}
+					})
+				]),
+			);
+		});
+
+		it('parses function declaration with and a return type', () => {
+			expect(quic_parse('fn alpha (a: u32, b: Alpha){}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'function_declaration',
+						name: 'alpha',
+						exported: false,
+						generics: [],
+						block: expect.objectContaining({
+							type: 'block_expression',
+							statements: []
+						}),
+						type_pattern: {
+							name: 'alpha',
+							type: 'function_type',
+							parameters: [
+								{
+									name: 'a',
+									initial: null,
+									type_pattern: {
+										type: 'class_type',
+										name: 'u32',
+									}
+								}, {
+									name: 'b',
+									initial: null,
+									type_pattern: {
+										type: 'class_type',
+										name: 'Alpha',
+									}
+								}],
+							result: null,
+						}
+					})
+				]),
+			);
+		});
+	});
+
+	describe('import declaration', () => {
+		it('parses a void function import', () => {
+			expect(quic_parse('import fn Alpha')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'import_function_declaration',
+						name: 'Alpha',
+						generics: [],
+						type_pattern: {
+							name: 'Alpha',
+							type: 'function_type',
+							parameters: [],
+							result: null,
+						}
+					})
+				]),
+			);
+		});
+		it('throws for anything non-fn', () => {
+			expect(() => quic_parse('import alpha')).toThrow('Invalid or unexpected token "alpha".');
+		});
+		it('throws for unexpected end of input', () => {
+			expect(() => quic_parse('import')).toThrow('Unexpected end of input.');
+		});
+	});
+
+	describe('let declaration', () => {
+		it('parses a let declaration with no type', () => {
+			expect(quic_parse('let a = 1')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'let_declaration',
+						description: expect.objectContaining({
+							name: 'a',
+							initial: expect.objectContaining({
+								type: 'number_expression',
+								value: '1'
+							}),
+							type_pattern: null
+						})
+					})
+				]),
+			);
+		});
+	});
+
+	describe('return statement', () => {
+		it('parses a return statement with an expression', () => {
+			expect(quic_parse('return 1')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'return_statement',
+						expression: expect.objectContaining({
+							type: 'number_expression',
+							value: '1',
+						})
+					})
+				]),
+			);
+		});
+		it('parses a return statement with no expression', () => {
+			expect(quic_parse('return')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'return_statement',
+						expression: null,
+					})
+				]),
+			);
+		});
+	});
+
+	describe('struct declaration', () => {
+		it('parses an empty struct declaration', () => {
+			expect(quic_parse('struct Al {}')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'struct_declaration',
+						name: 'Al',
+						generics: [],
+						fields: [],
+					})
+				]),
+			);
+		});
+	});
+
+	describe('type declaration', () => {
+		it('parses a simple type alias', () => {
+			expect(quic_parse('type N = B')).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						type: 'type_declaration',
+						name: 'N',
+						type_pattern: {
+							type: 'class_type',
+							name: 'B',
+						}
+					})
+				]),
+			);
+		});
+	});
 });
