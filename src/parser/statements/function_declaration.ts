@@ -38,7 +38,7 @@ export function parse_function_declaration (ctx: ParserContext, exported = false
 }
 
 export function parse_function_result_type (ctx: ParserContext): TypePattern | null {
-	if (match_token(ctx, 'symbol', '-') && match_token(ctx, 'symbol', '>')) {
+	if (match_token(ctx, 'symbol', '-') && match_token(ctx, 'symbol', '>', 1)) {
 		consume_token(ctx);
 		consume_token(ctx);
 		return parse_type_pattern(ctx);
