@@ -37,6 +37,7 @@ export function add_infix_parselet (pattern: TokenPattern, precedence: number, p
 	const last = patterns.pop();
 
 	if (!last) {
+		// unreachable
 		throw new Error(`Invalid pattern ${pattern}`);
 	}
 
